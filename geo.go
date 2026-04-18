@@ -37,5 +37,9 @@ func (o *Geo) GetGeo(ip net.IP) string {
 		slog.Debug("Error reading geo", "err", err)
 		return "N/A"
 	}
+	// Return "XX" as fallback when IsoCode is empty (e.g. for private/reserved IPs)
+	if country.Country.IsoCode == "" {
+		return "XX"
+	}
 	return country.Country.IsoCode
 }
