@@ -1,4 +1,4 @@
-module github.com/xtls/RealiTLScanner
+module github.com/myusername/RealiTLScanner
 
 go 1.21
 
