@@ -27,7 +27,7 @@ type Scanner struct {
 // NewScanner creates a new Scanner with sensible defaults.
 func NewScanner(timeout time.Duration, concurrent int) *Scanner {
 	if concurrent <= 0 {
-		concurrent = 100
+		concurrent = 50 // lowered from 100 to be gentler on my home network
 	}
 	if timeout <= 0 {
 		timeout = 5 * time.Second
@@ -121,25 +121,4 @@ func detectReality(state tls.ConnectionState) bool {
 		return false
 	}
 	return true
-}
-
-// isRealitySignature checks whether a handshake error pattern matches Reality behaviour.
-func isRealitySignature(err error) bool {
-	if err == nil {
-		return false
-	}
-	// Reality proxies may reset the connection on unrecognised clients.
-	errStr := err.Error()
-	return contains(errStr, "connection reset") || contains(errStr, "EOF")
-}
-
-func contains(s, sub string) bool {
-	return len(s) >= len(sub) && (s == sub || len(s) > 0 && func() bool {
-		for i := 0; i <= len(s)-len(sub); i++ {
-			if s[i:i+len(sub)] == sub {
-				return true
-			}
-		}
-		return false
-	}())
 }
