@@ -31,9 +31,11 @@ func main() {
 	flag.StringVar(&in, "in", "", "Specify a file that contains multiple "+
 		"IPs, IP CIDRs or domains to scan, divided by line break")
 	flag.IntVar(&port, "port", 443, "Specify a HTTPS port to check")
-	flag.IntVar(&thread, "thread", 2, "Count of concurrent tasks")
+	// Increased default thread count from 2 to 4 for faster scanning on my machine
+	flag.IntVar(&thread, "thread", 4, "Count of concurrent tasks")
 	flag.StringVar(&out, "out", "out.csv", "Output file to store the result")
-	flag.IntVar(&timeout, "timeout", 10, "Timeout for every check")
+	// Increased default timeout slightly for more reliable results on slow hosts
+	flag.IntVar(&timeout, "timeout", 15, "Timeout for every check")
 	flag.BoolVar(&verbose, "v", false, "Verbose output")
 	flag.BoolVar(&enableIPv6, "46", false, "Enable IPv6 in additional to IPv4")
 	flag.StringVar(&url, "url", "", "Crawl the domain list from a URL, "+
@@ -111,7 +113,4 @@ func main() {
 		}()
 	}
 	t := time.Now()
-	slog.Info("Started all scanning threads", "time", t)
-	wg.Wait()
-	slog.Info("Scanning completed", "time", time.Now(), "elapsed", time.Since(t).String())
-}
+	slog.I
