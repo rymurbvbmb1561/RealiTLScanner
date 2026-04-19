@@ -7,4 +7,6 @@ FROM alpine:latest
 RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 COPY --from=build /src/RealiTLScanner .
+# Default to UTC timezone
+ENV TZ=UTC
 ENTRYPOINT ["./RealiTLScanner"]
