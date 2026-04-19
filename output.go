@@ -70,10 +70,12 @@ func (ow *OutputWriter) Write(result ScanResult) error {
 
 	ow.results = append(ow.results, result)
 
-	// Print to stdout
+	// Print to stdout - show all scanned hosts, not just Reality ones
 	if result.IsReality {
 		fmt.Printf("[+] %s:%d | Reality | SNI: %s | %s | %s | %dms\n",
 			result.IP, result.Port, result.ServerName, result.Country, result.ASN, result.Latency)
+	} else if result.Error != "" {
+		fmt.Printf("[-] %s:%d | Error: %s\n", result.IP, result.Port, result.Error)
 	}
 
 	if ow.file == nil {
@@ -116,35 +118,4 @@ func (ow *OutputWriter) writeTXT(result ScanResult) error {
 		result.Country, result.ASN, result.Latency)
 	_, err := ow.file.WriteString(line)
 	return err
-}
-
-// Close finalizes the output, flushing JSON if needed
-func (ow *OutputWriter) Close() error {
-	ow.mu.Lock()
-	defer ow.mu.Unlock()
-
-	if ow.file != nil && ow.format == "json" {
-		enc := json.NewEncoder(ow.file)
-		enc.SetIndent("", "  ")
-		if err := enc.Encode(ow.results); err != nil {
-			return err
-		}
-	}
-
-	if ow.file != nil {
-		return ow.file.Close()
-	}
-	return nil
-}
-
-// Summary prints a brief scan summary to stdout
-func (ow *OutputWriter) Summary() {
-	total := len(ow.results)
-	realityCount := 0
-	for _, r := range ow.results {
-		if r.IsReality {
-			realityCount++
-		}
-	}
-	fmt.Printf("\n[*] Scan complete: %d scanned, %d Reality detected\n", total, realityCount)
 }
