@@ -27,10 +27,10 @@ type Scanner struct {
 // NewScanner creates a new Scanner with sensible defaults.
 func NewScanner(timeout time.Duration, concurrent int) *Scanner {
 	if concurrent <= 0 {
-		concurrent = 50 // lowered from 100 to be gentler on my home network
+		concurrent = 20 // lowered further for my slow home connection
 	}
 	if timeout <= 0 {
-		timeout = 5 * time.Second
+		timeout = 8 * time.Second // increased timeout to reduce false negatives on slow hosts
 	}
 	return &Scanner{
 		Timeout:    timeout,
@@ -117,8 +117,4 @@ func detectReality(state tls.ConnectionState) bool {
 		return false
 	}
 	// Additional heuristic: no ALPN negotiated.
-	if state.NegotiatedProtocol != "" {
-		return false
-	}
-	return true
-}
+	if state.Nego
